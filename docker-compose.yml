@@ -1,0 +1,29 @@
+version: '3' #versionは3系が最新版で、versionによって書き方が異なる
+
+services:
+  php-apache:
+    tty: true #CentOS7イメージを使用してコンテナ起動すると直後に終了するのを防止
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ci4_test_php
+    volumes:
+      # - ./php.ini:/usr/local/etc/php/php.ini
+      - ./src:/var/www/html
+    ports:
+      - 8080:80
+  mysql:
+    image: mysql:5.7
+    # コンテナ名
+    container_name: ci4_test_mysql
+    volumes:
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf #my.cnfファイルをマウント
+      - ./mysql/storage:/var/lib/mysql #永続化
+    ports:
+      - "5306:3306"
+    environment: #コンテナ内のMySQLを起動する際の設定
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=test
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=password
+      - TZ=Asia/Tokyo
